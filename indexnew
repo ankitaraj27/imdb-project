@@ -1,0 +1,11 @@
+<html>
+<head>
+<title>Movies Rating</title>
+</head>
+<body>
+<form method='POST' action="rate.php">
+<input type='text' name='movie' size='100'>
+<input type='submit' value='get'>
+</form> 
+</body>
+</html>

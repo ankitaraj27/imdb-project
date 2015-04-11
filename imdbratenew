@@ -1,0 +1,137 @@
+<?php
+
+$cd=$_POST['movie'];
+$c='/\[(.+?)\]/';
+$b='/ HD(.+?)+\z/i';
+$e='/BR(.+?)+\z/i';
+$f='/\.(.+?)+\z/';
+$cd=preg_replace($c,"",$cd,-1);
+$cd=preg_replace($b,"",$cd,-1);
+$cd=preg_replace($e,"",$cd,-1);
+$cd=preg_replace($f,"",$cd,-1);
+$f='/\((.+?)\)/';
+$cd=preg_replace($f,"",$cd,-1);
+$mysqli = new mysqli("localhost", "root", "", "imdb");
+/*mysql_connect("localhost","root","");
+mysql_select_db("imdb");
+$query="select * from rate where name='$cd'";
+$result=mysql_query($query);
+$row=mysql_fetch_array($result);*/
+
+if ($stmt = $mysqli->prepare("SELECT num FROM rate WHERE name=?")) {
+ 
+    // Bind a variable to the parameter as a string. 
+    $stmt->bind_param("s", $cd);
+ 
+    // Execute the statement.
+    $stmt->execute();
+ 
+    // Get the variables from the query.
+    $stmt->bind_result($pass);
+ 
+    // Fetch the data.
+    $stmt->fetch();
+ 
+    // Display the data.
+   // printf("Password for user %s is %s\n", $name, $pass);
+ 
+    // Close the prepared statement.
+    $stmt->close();
+	if($pass)
+	{
+	 echo $cd;
+echo "   -  >>  ";
+ echo $pass;
+ }
+	
+	else
+	{
+		function curl($url) {
+        $ch = curl_init();  // Initialising cURL
+        curl_setopt($ch, CURLOPT_URL, $url);    // Setting cURL's URL option with the $url variable passed into the function
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // Setting cURL's option to return the webpage data
+        $data = curl_exec($ch); // Executing the cURL request and assigning the returned data to the $data variable
+        curl_close($ch);    // Closing cURL
+        return $data;   // Returning the data from the function
+    }
+
+	$ab="http://www.omdbapi.com/?t=";
+	$bc="&y=&plot=short&r=json";
+	
+	$c=str_replace(" ","+",$cd);
+	
+	
+$a=$ab.$c.$bc;
+    $scraped_website = curl($a);  // Executing our curl function to scrape the webpage http://www.example.com and return the results into the $scraped_website variable
+	
+	$regex = '/"imdbRating":"(.+?)",/';
+ preg_match($regex,$scraped_website,$match);
+// var_dump($match); 
+//$b=$match[1];
+//ltrim($b,'\"');
+$regex = '/"Title":"(.+?)"/';
+preg_match($regex,$scraped_website,$name);
+if ($stmt = $mysqli->prepare("SELECT num FROM rate WHERE name=?")) {
+ 
+    // Bind a variable to the parameter as a string. 
+    $stmt->bind_param("s", $name[1]);
+ 
+    // Execute the statement.
+    $stmt->execute();
+ 
+    // Get the variables from the query.
+    $stmt->bind_result($pass);
+ 
+    // Fetch the data.
+    $stmt->fetch();
+ 
+    // Display the data.
+   // printf("Password for user %s is %s\n", $name, $pass);
+ 
+    // Close the prepared statement.
+    $stmt->close();
+	if($pass)
+	{
+	 echo $name[1];
+echo "   -  >>  ";
+ echo $pass;
+ }
+}	
+	else
+	{
+if ($stmt = $mysqli->prepare("INSERT INTO rate (name, num) VALUES (?, ?)")) {
+ 
+    // Bind the variables to the parameter as strings. 
+    $stmt->bind_param("ss", $name[1], $match[1]);
+ 
+    // Execute the statement.
+    $stmt->execute();
+ 
+    // Close the prepared statement.
+    $stmt->close();
+	
+	if($match[1])
+	{
+	
+		 echo $name[1];
+echo "   -  >>  ";
+  echo $match[1];
+	}
+	else
+	{
+	echo("Movie Not Found!!");
+	}
+}
+}
+
+/*$qu="insert into rate (name,num) values ('$cd','$match[1]')";
+
+$res=mysql_query($qu);
+ echo $match[1];
+ echo "<br/>"."Database updated successfully";*/
+ 
+	}
+ 
+}
+
+?>
